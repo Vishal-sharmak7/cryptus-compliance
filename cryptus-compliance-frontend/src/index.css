@@ -1,0 +1,119 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Roboto+Condensed:wght@300;400;500;600;700&display=swap');
+
+@import "tailwindcss";
+
+/* ─── Universal Background Gradient ──────────────────────────────── */
+:root {
+  --bg-gradient: radial-gradient(ellipse 80% 60% at 10% -10%, rgba(99,102,241,0.12) 0%, transparent 60%),
+                 radial-gradient(ellipse 60% 50% at 90% 110%, rgba(59,130,246,0.10) 0%, transparent 60%),
+                 radial-gradient(ellipse 50% 40% at 50% 50%, rgba(139,92,246,0.05) 0%, transparent 70%),
+                 #f8fafc;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: "Inter", "Roboto Condensed", sans-serif;
+  background: var(--bg-gradient);
+  background-attachment: fixed;
+  min-height: 100vh;
+  color: #0f172a;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ─── Animations ─────────────────────────────────────────────────── */
+@keyframes slideInRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+
+@keyframes slideInDown {
+  from { transform: translateY(-20px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { transform: translateY(30px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-8px); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position:  200% 0; }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.4); }
+  50%       { box-shadow: 0 0 0 12px rgba(99,102,241,0); }
+}
+
+.animate-slide-in     { animation: slideInRight 0.6s ease forwards; }
+.animate-slide-down   { animation: slideInDown  0.4s ease forwards; }
+.animate-fade-up      { animation: fadeInUp     0.6s ease forwards; }
+.animate-float        { animation: float        3s ease-in-out infinite; }
+.animate-pulse-glow   { animation: pulse-glow   2s ease-in-out infinite; }
+
+/* ─── Glassmorphism Utility ──────────────────────────────────────── */
+.glass {
+  background: rgba(255,255,255,0.70);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.50);
+}
+
+.glass-dark {
+  background: rgba(15,23,42,0.85);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+
+/* ─── Gradient Text ──────────────────────────────────────────────── */
+.gradient-text {
+  background: #155DFC;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Card Hover ─────────────────────────────────────────────────── */
+.card-hover {
+  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+}
+.card-hover:hover {
+  transform: translateY(-6px);
+  box-shadow: 0 24px 48px -12px rgba(99,102,241,0.18);
+  border-color: rgba(99,102,241,0.25);
+}
+
+/* ─── Profile Dropdown Animation ─────────────────────────────── */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.animate-fadeInDown {
+  animation: fadeInDown 0.2s ease forwards;
+}

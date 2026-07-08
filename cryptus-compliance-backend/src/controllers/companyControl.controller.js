@@ -9,38 +9,74 @@ export const assignControl =
         control_id
     } = req.body;
 
-    db.query(
-        `
-        INSERT INTO company_controls
-        (
-            company_id,
-            framework_id,
-            control_id
-        )
-        VALUES (?,?,?)
-        `,
-        [
-            company_id,
-            framework_id,
-            control_id
-        ],
-        (err,result)=>{
-
-            if(err){
-                return res.status(500)
-                .json({
-                    success:false,
-                    error:err.message
-                });
-            }
-
-            res.status(201).json({
-                success:true,
-                message:
-                "Control Assigned"
+    if (Array.isArray(control_id)) {
+        if (control_id.length === 0) {
+            return res.status(400).json({
+                success: false,
+                message: "No controls selected"
             });
         }
-    );
+
+        const values = control_id.map(id => [company_id, framework_id, id]);
+
+        db.query(
+            `
+            INSERT INTO company_controls
+            (
+                company_id,
+                framework_id,
+                control_id
+            )
+            VALUES ?
+            `,
+            [values],
+            (err,result)=>{
+                if(err){
+                    return res.status(500)
+                    .json({
+                        success:false,
+                        error:err.message
+                    });
+                }
+
+                res.status(201).json({
+                    success:true,
+                    message: "Controls Assigned"
+                });
+            }
+        );
+    } else {
+        db.query(
+            `
+            INSERT INTO company_controls
+            (
+                company_id,
+                framework_id,
+                control_id
+            )
+            VALUES (?,?,?)
+            `,
+            [
+                company_id,
+                framework_id,
+                control_id
+            ],
+            (err,result)=>{
+                if(err){
+                    return res.status(500)
+                    .json({
+                        success:false,
+                        error:err.message
+                    });
+                }
+
+                res.status(201).json({
+                    success:true,
+                    message: "Control Assigned"
+                });
+            }
+        );
+    }
 };
 
 
@@ -52,24 +88,16 @@ export const getCompanyControls =
 
     const query = `
     SELECT
-
       cc.id,
-
       c.id AS control_id,
-
       c.title,
-
       c.description,
-
+      c.category,
       cc.status,
-
       cc.notes
-
     FROM company_controls cc
-
     JOIN controls c
     ON cc.control_id = c.id
-
     WHERE cc.company_id = ?
     `;
 

@@ -5,7 +5,8 @@ export const createControl = (req, res) => {
   const {
     framework_id,
     title,
-    description
+    description,
+    category
   } = req.body;
 
   if (!framework_id || !title) {
@@ -18,13 +19,13 @@ export const createControl = (req, res) => {
 
   const query = `
     INSERT INTO controls
-    (framework_id,title,description)
-    VALUES(?,?,?)
+    (framework_id,title,description,category)
+    VALUES(?,?,?,?)
   `;
 
   db.query(
     query,
-    [framework_id, title, description],
+    [framework_id, title, description, category || null],
     (err, result) => {
 
       if (err) {
@@ -133,10 +134,10 @@ export const getControlById = (
 
 
 
-// Update Control (title + description)
+// Update Control (title + description + category)
 export const updateControl = (req, res) => {
   const { id } = req.params;
-  const { title, description } = req.body;
+  const { title, description, category } = req.body;
 
   if (!title) {
     return res.status(400).json({
@@ -146,8 +147,8 @@ export const updateControl = (req, res) => {
   }
 
   db.query(
-    `UPDATE controls SET title=?, description=? WHERE id=?`,
-    [title, description, id],
+    `UPDATE controls SET title=?, description=?, category=? WHERE id=?`,
+    [title, description, category || null, id],
     (err) => {
       if (err) {
         return res.status(500).json({ success: false, error: err.message });

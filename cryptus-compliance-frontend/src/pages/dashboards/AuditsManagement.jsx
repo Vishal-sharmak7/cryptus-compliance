@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../context/AuthContext";
 import { auditService } from "../../services/audit.service";
 import { companyService } from "../../services/company.service";
 import { frameworkService } from "../../services/framework.service";
@@ -10,9 +12,12 @@ import toast from "react-hot-toast";
 export default function AuditsManagement() {
   const [searchTerm, setSearchTerm] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingAudit, setEditingAudit] = useState(null);
   const [formData, setFormData] = useState({ title: "", description: "", framework_id: "", company_id: "", auditor_id: "", start_date: "", end_date: "" });
   
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
+  const { user } = useAuth();
 
   const { data: auditsResp, isLoading } = useQuery({
     queryKey: ["audits"],
@@ -34,7 +39,48 @@ export default function AuditsManagement() {
     onError: (err) => toast.error(err.response?.data?.message || "Failed to create audit")
   });
 
-  const audits = auditsResp?.audits || auditsResp?.data || [];
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }) => auditService.update(id, data),
+    onSuccess: () => {
+      toast.success("Audit updated successfully");
+      queryClient.invalidateQueries({ queryKey: ["audits"] });
+      setIsModalOpen(false);
+      setEditingAudit(null);
+      setFormData({ title: "", description: "", framework_id: "", company_id: "", auditor_id: "", start_date: "", end_date: "" });
+    },
+    onError: (err) => toast.error(err.response?.data?.message || "Failed to update audit")
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => auditService.delete(id),
+    onSuccess: () => {
+      toast.success("Audit deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["audits"] });
+    },
+    onError: (err) => toast.error(err.response?.data?.message || "Failed to delete audit")
+  });
+
+  const handleEdit = (audit) => {
+    setEditingAudit(audit);
+    setFormData({
+      title: audit.title || "",
+      description: audit.description || "",
+      framework_id: audit.framework_id || "",
+      company_id: audit.company_id || "",
+      auditor_id: audit.auditor_id || "",
+      start_date: audit.start_date ? new Date(audit.start_date).toISOString().split('T')[0] : "",
+      end_date: audit.end_date ? new Date(audit.end_date).toISOString().split('T')[0] : ""
+    });
+    setIsModalOpen(true);
+  };
+
+  const handleDelete = (id) => {
+    if (window.confirm("Are you sure you want to delete this audit?")) {
+      deleteMutation.mutate(id);
+    }
+  };
+
+  const audits = auditsResp?.data?.audits || auditsResp?.audits || (Array.isArray(auditsResp?.data) ? auditsResp.data : []);
   const companies = companiesResp?.companies || [];
   const frameworks = frameworksResp?.frameworks || [];
   const auditors = auditorsResp?.auditors || [];
@@ -48,22 +94,49 @@ export default function AuditsManagement() {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!formData.title || !formData.company_id || !formData.framework_id || !formData.auditor_id) return toast.error("Required fields missing");
-    createMutation.mutate(formData);
+    
+    const payload = {
+      title: formData.title,
+      description: formData.description || undefined,
+      company_id: Number(formData.company_id),
+      framework_id: Number(formData.framework_id),
+      auditor_id: Number(formData.auditor_id),
+      start_date: formData.start_date || undefined,
+      end_date: formData.end_date || undefined,
+    };
+
+    if (editingAudit) {
+      updateMutation.mutate({ id: editingAudit.id, data: payload });
+    } else {
+      createMutation.mutate(payload);
+    }
   };
 
   return (
     <div className="space-y-6 relative">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-slate-900">Audits Management</h1>
-          <p className="text-slate-500">Assign auditors to companies and track compliance progress.</p>
+          <h1 className="text-2xl font-bold text-slate-900">
+            {user?.role === "CLIENT" ? "My Audits" : "Audits Management"}
+          </h1>
+          <p className="text-slate-500">
+            {user?.role === "CLIENT"
+              ? "Track your company compliance audits and verification milestones."
+              : "Assign auditors to companies and track compliance progress."}
+          </p>
         </div>
-        <button 
-          onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl font-medium hover:bg-indigo-700 transition"
-        >
-          <Plus size={18} /> Assign Audit
-        </button>
+        {user?.role !== "CLIENT" && (
+          <button 
+            onClick={() => {
+              setEditingAudit(null);
+              setFormData({ title: "", description: "", framework_id: "", company_id: "", auditor_id: "", start_date: "", end_date: "" });
+              setIsModalOpen(true);
+            }}
+            className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-xl font-medium hover:bg-indigo-700 transition"
+          >
+            <Plus size={18} /> Assign Audit
+          </button>
+        )}
       </div>
 
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
@@ -89,6 +162,7 @@ export default function AuditsManagement() {
                 <th className="px-6 py-4 font-medium">Framework</th>
                 <th className="px-6 py-4 font-medium">Auditor</th>
                 <th className="px-6 py-4 font-medium">Status</th>
+                {user?.role !== "CLIENT" && <th className="px-6 py-4 font-medium text-right">Actions</th>}
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
@@ -102,7 +176,11 @@ export default function AuditsManagement() {
                 </tr>
               ) : (
                 filteredAudits.map((a, idx) => (
-                  <tr key={a.id || idx} className="hover:bg-slate-50/50 transition">
+                  <tr 
+                    key={a.id || idx} 
+                    onClick={() => navigate(`/app/audits/${a.id}`)}
+                    className="hover:bg-indigo-50/30 transition cursor-pointer"
+                  >
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-10 h-10 rounded-lg bg-indigo-50 flex items-center justify-center text-indigo-600">
@@ -133,6 +211,28 @@ export default function AuditsManagement() {
                         {a.status || 'PLANNED'}
                       </span>
                     </td>
+                    {user?.role !== "CLIENT" && (
+                      <td className="px-6 py-4 text-right" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex justify-end gap-1.5">
+                          <button
+                            onClick={() => handleEdit(a)}
+                            className="p-1.5 text-slate-400 hover:text-indigo-600 hover:bg-slate-100 rounded-lg transition"
+                            title="Edit Audit"
+                          >
+                            <Edit2 size={15} />
+                          </button>
+                          {user?.role === "SUPER_ADMIN" && (
+                            <button
+                              onClick={() => handleDelete(a.id)}
+                              className="p-1.5 text-slate-400 hover:text-red-600 hover:bg-slate-100 rounded-lg transition"
+                              title="Delete Audit"
+                            >
+                              <Trash2 size={15} />
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                    )}
                   </tr>
                 ))
               )}
@@ -145,8 +245,16 @@ export default function AuditsManagement() {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4 overflow-y-auto">
           <div className="bg-white rounded-2xl w-full max-w-lg shadow-xl overflow-hidden animate-in fade-in zoom-in-95 duration-200 my-8">
             <div className="flex items-center justify-between p-5 border-b border-slate-100 sticky top-0 bg-white z-10">
-              <h2 className="text-lg font-bold text-slate-800">Assign Audit</h2>
-              <button onClick={() => setIsModalOpen(false)} className="text-slate-400 hover:text-slate-600 transition">
+              <h2 className="text-lg font-bold text-slate-800">
+                {editingAudit ? "Edit Audit" : "Assign Audit"}
+              </h2>
+              <button 
+                onClick={() => {
+                  setIsModalOpen(false);
+                  setEditingAudit(null);
+                }} 
+                className="text-slate-400 hover:text-slate-600 transition"
+              >
                 <X size={20} />
               </button>
             </div>
@@ -192,8 +300,23 @@ export default function AuditsManagement() {
               </div>
               
               <div className="pt-2 flex gap-3 sticky bottom-0 bg-white">
-                <button type="button" onClick={() => setIsModalOpen(false)} className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl font-medium">Cancel</button>
-                <button type="submit" disabled={createMutation.isPending} className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-xl font-medium disabled:opacity-50">Assign Audit</button>
+                <button 
+                  type="button" 
+                  onClick={() => {
+                    setIsModalOpen(false);
+                    setEditingAudit(null);
+                  }} 
+                  className="flex-1 px-4 py-2 border border-slate-200 text-slate-600 rounded-xl font-medium"
+                >
+                  Cancel
+                </button>
+                <button 
+                  type="submit" 
+                  disabled={createMutation.isPending || updateMutation.isPending} 
+                  className="flex-1 px-4 py-2 bg-indigo-600 text-white rounded-xl font-medium disabled:opacity-50"
+                >
+                  {editingAudit ? "Save Changes" : "Assign Audit"}
+                </button>
               </div>
             </form>
           </div>

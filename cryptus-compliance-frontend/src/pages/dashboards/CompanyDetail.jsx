@@ -60,6 +60,13 @@ const STATUS_CONFIG = {
   },
 };
 
+const CATEGORY_COLORS = {
+  Organizational: "bg-blue-50 text-blue-700 border-blue-200",
+  People: "bg-purple-50 text-purple-700 border-purple-200",
+  Physical: "bg-amber-50 text-amber-700 border-amber-200",
+  Technological: "bg-indigo-50 text-indigo-700 border-indigo-200",
+};
+
 function StatusBadge({ status }) {
   const cfg = STATUS_CONFIG[status] || STATUS_CONFIG.NOT_STARTED;
   const Icon = cfg.icon;
@@ -134,9 +141,16 @@ function ControlRow({ control, onStatusUpdate, onRemove }) {
         </div>
         <div className="flex-1 min-w-0">
           <div className="flex items-center justify-between gap-2 flex-wrap">
-            <p className="font-semibold text-slate-800 text-sm">
-              {control.title}
-            </p>
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="font-semibold text-slate-800 text-sm">
+                {control.title}
+              </span>
+              {control.category && (
+                <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold border ${CATEGORY_COLORS[control.category] || 'bg-slate-50 text-slate-600 border-slate-200'}`}>
+                  {control.category}
+                </span>
+              )}
+            </div>
             <div className="flex items-center gap-2">
               <StatusBadge status={control.status} />
               <button
@@ -225,7 +239,7 @@ export default function CompanyDetail() {
   // Assign Control Modal state
   const [isAssignCtrlOpen, setIsAssignCtrlOpen] = useState(false);
   const [ctrlModalFwId, setCtrlModalFwId] = useState("");
-  const [selectedControlId, setSelectedControlId] = useState("");
+  const [selectedControlIds, setSelectedControlIds] = useState([]);
   const [ctrlSearch, setCtrlSearch] = useState("");
 
   // Fetch company info
@@ -304,7 +318,7 @@ export default function CompanyDetail() {
       queryClient.invalidateQueries({ queryKey: ["company-score", id] });
       setIsAssignCtrlOpen(false);
       setCtrlModalFwId("");
-      setSelectedControlId("");
+      setSelectedControlIds([]);
       setCtrlSearch("");
     },
     onError: (err) =>
@@ -347,6 +361,36 @@ export default function CompanyDetail() {
   const filteredControls = availableControls.filter((c) =>
     c.title?.toLowerCase().includes(ctrlSearch.toLowerCase()),
   );
+
+  const handleToggleControl = (ctrlId) => {
+    setSelectedControlIds((prev) =>
+      prev.includes(ctrlId)
+        ? prev.filter((id) => id !== ctrlId)
+        : [...prev, ctrlId]
+    );
+  };
+
+  const handleSelectAll = () => {
+    const visibleIds = filteredControls.map((c) => c.id);
+    const allVisibleSelected = visibleIds.every((id) =>
+      selectedControlIds.includes(id)
+    );
+    if (allVisibleSelected) {
+      setSelectedControlIds((prev) =>
+        prev.filter((id) => !visibleIds.includes(id))
+      );
+    } else {
+      setSelectedControlIds((prev) => {
+        const newSelection = [...prev];
+        visibleIds.forEach((id) => {
+          if (!newSelection.includes(id)) {
+            newSelection.push(id);
+          }
+        });
+        return newSelection;
+      });
+    }
+  };
 
   // IDs already assigned → filter them out of the modal list
   const assignedFrameworkIds = new Set(
@@ -956,7 +1000,7 @@ export default function CompanyDetail() {
                 onClick={() => {
                   setIsAssignCtrlOpen(false);
                   setCtrlModalFwId("");
-                  setSelectedControlId("");
+                  setSelectedControlIds([]);
                   setCtrlSearch("");
                 }}
                 className="p-2 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition"
@@ -982,7 +1026,7 @@ export default function CompanyDetail() {
                         key={fw.id || i}
                         onClick={() => {
                           setCtrlModalFwId(fw.framework_id ?? fw.id);
-                          setSelectedControlId("");
+                          setSelectedControlIds([]);
                           setCtrlSearch("");
                         }}
                         className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-sm font-semibold transition ${
@@ -1021,6 +1065,24 @@ export default function CompanyDetail() {
                     />
                   </div>
 
+                  {/* Select All Option */}
+                  {!modalCtrlLoading && filteredControls.length > 0 && (
+                    <div className="flex items-center justify-between mb-3 px-1">
+                      <span className="text-xs text-slate-500 font-medium">
+                        {selectedControlIds.length} of {filteredControls.length} controls selected
+                      </span>
+                      <button
+                        type="button"
+                        onClick={handleSelectAll}
+                        className="text-xs font-bold text-violet-600 hover:text-violet-700 bg-violet-50 hover:bg-violet-100/80 px-2.5 py-1 rounded-lg transition"
+                      >
+                        {filteredControls.every((c) => selectedControlIds.includes(c.id))
+                          ? "Deselect All"
+                          : "Select All"}
+                      </button>
+                    </div>
+                  )}
+
                   {/* Controls list */}
                   <div className="max-h-52 overflow-y-auto space-y-2 pr-1">
                     {modalCtrlLoading ? (
@@ -1041,20 +1103,16 @@ export default function CompanyDetail() {
                       filteredControls.map((ctrl) => (
                         <button
                           key={ctrl.id}
-                          onClick={() =>
-                            setSelectedControlId(
-                              selectedControlId === ctrl.id ? "" : ctrl.id,
-                            )
-                          }
+                          onClick={() => handleToggleControl(ctrl.id)}
                           className={`w-full flex items-start gap-3 p-3 rounded-xl border text-left transition-all ${
-                            selectedControlId === ctrl.id
-                              ? "border-violet-400 bg-violet-50 shadow-sm"
+                            selectedControlIds.includes(ctrl.id)
+                              ? "border-violet-400 bg-violet-50/50 shadow-sm"
                               : "border-slate-200 hover:border-violet-200 hover:bg-slate-50"
                           }`}
                         >
                           <div
                             className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 mt-0.5 transition ${
-                              selectedControlId === ctrl.id
+                              selectedControlIds.includes(ctrl.id)
                                 ? "bg-violet-600"
                                 : "bg-slate-100"
                             }`}
@@ -1062,29 +1120,36 @@ export default function CompanyDetail() {
                             <Shield
                               size={14}
                               className={
-                                selectedControlId === ctrl.id
+                                selectedControlIds.includes(ctrl.id)
                                   ? "text-white"
                                   : "text-slate-400"
                               }
                             />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <p
-                              className={`font-semibold text-sm ${
-                                selectedControlId === ctrl.id
-                                  ? "text-violet-700"
-                                  : "text-slate-800"
-                              }`}
-                            >
-                              {ctrl.title}
-                            </p>
+                            <div className="flex items-center gap-2 flex-wrap mb-1">
+                              <span
+                                className={`font-semibold text-sm ${
+                                  selectedControlIds.includes(ctrl.id)
+                                    ? "text-violet-700"
+                                    : "text-slate-800"
+                                }`}
+                              >
+                                {ctrl.title}
+                              </span>
+                              {ctrl.category && (
+                                <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold border ${CATEGORY_COLORS[ctrl.category] || 'bg-slate-50 text-slate-600 border-slate-200'}`}>
+                                  {ctrl.category}
+                                </span>
+                              )}
+                            </div>
                             {ctrl.description && (
                               <p className="text-xs text-slate-400 mt-0.5 line-clamp-2">
                                 {ctrl.description}
                               </p>
                             )}
                           </div>
-                          {selectedControlId === ctrl.id && (
+                          {selectedControlIds.includes(ctrl.id) && (
                             <CheckCircle2
                               size={17}
                               className="text-violet-600 flex-shrink-0 mt-0.5"
@@ -1104,7 +1169,7 @@ export default function CompanyDetail() {
                 onClick={() => {
                   setIsAssignCtrlOpen(false);
                   setCtrlModalFwId("");
-                  setSelectedControlId("");
+                  setSelectedControlIds([]);
                   setCtrlSearch("");
                 }}
                 className="flex-1 px-4 py-2.5 border border-slate-200 text-slate-600 text-sm font-semibold rounded-xl hover:bg-slate-50 transition"
@@ -1113,7 +1178,7 @@ export default function CompanyDetail() {
               </button>
               <button
                 disabled={
-                  !selectedControlId ||
+                  selectedControlIds.length === 0 ||
                   !ctrlModalFwId ||
                   assignControlMutation.isPending
                 }
@@ -1121,7 +1186,7 @@ export default function CompanyDetail() {
                   assignControlMutation.mutate({
                     company_id: id,
                     framework_id: ctrlModalFwId,
-                    control_id: selectedControlId,
+                    control_id: selectedControlIds,
                   })
                 }
                 className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-violet-600 text-white text-sm font-semibold rounded-xl hover:bg-violet-700 transition disabled:opacity-40 disabled:cursor-not-allowed"
@@ -1133,7 +1198,7 @@ export default function CompanyDetail() {
                   </>
                 ) : (
                   <>
-                    <Check size={15} /> Assign Control
+                    <Check size={15} /> Assign {selectedControlIds.length > 1 ? `${selectedControlIds.length} Controls` : "Control"}
                   </>
                 )}
               </button>

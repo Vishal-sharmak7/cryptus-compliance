@@ -110,21 +110,21 @@ function AppRoutes() {
               }
             />
 
-            {/* SUPER_ADMIN & AUDITOR */}
+            {/* SUPER_ADMIN & AUDITOR & CLIENT */}
             <Route
               path="audits"
               element={
-                <RoleRoute roles={["SUPER_ADMIN", "AUDITOR"]}>
+                <RoleRoute roles={["SUPER_ADMIN", "AUDITOR", "CLIENT"]}>
                   <AuditsManagement />
                 </RoleRoute>
               }
             />
 
-            {/* SUPER_ADMIN & AUDITOR */}
+            {/* SUPER_ADMIN & AUDITOR & CLIENT */}
             <Route
               path="audits/:id"
               element={
-                <RoleRoute roles={["SUPER_ADMIN", "AUDITOR"]}>
+                <RoleRoute roles={["SUPER_ADMIN", "AUDITOR", "CLIENT"]}>
                   <AuditDetails />
                 </RoleRoute>
               }

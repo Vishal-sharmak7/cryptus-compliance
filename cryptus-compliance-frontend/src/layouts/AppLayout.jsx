@@ -33,6 +33,7 @@ const getNavItems = (role) => {
     ],
     CLIENT: [
       { label: "Dashboard",  icon: LayoutDashboard, to: "/app/dashboard" },
+      { label: "Audits",     icon: ClipboardCheck,  to: "/app/audits" },
       { label: "Frameworks", icon: Layers,          to: "/app/frameworks" },
       { label: "Controls",   icon: ShieldCheck,     to: "/app/controls" },
       { label: "Evidence",   icon: FileText,        to: "/app/evidence" },

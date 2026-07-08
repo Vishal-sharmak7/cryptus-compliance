@@ -21,6 +21,10 @@ import dashboardRoutes      from "./src/routes/dashboard.routes.js";
 import reportRoutes         from "./src/routes/report.routes.js";
 import userRoutes           from "./src/routes/user.routes.js";
 
+// ── Swagger UI ────────────────────────────────────────────────────
+import swaggerUi from "swagger-ui-express";
+import swaggerDocument from "./src/config/swagger.js";
+
 // ── Middleware ────────────────────────────────────────────────────
 import { errorHandler, notFoundHandler } from "./src/middleware/error.middleware.js";
 
@@ -65,6 +69,9 @@ app.use("/uploads", express.static("uploads"));
 app.get("/", (req, res) =>
   res.json({ success: true, message: "Cryptus Compliance API v2.0", timestamp: new Date().toISOString() })
 );
+
+// ── Swagger Docs ──────────────────────────────────────────────────
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
 // ── API Routes ────────────────────────────────────────────────────
 app.use("/api/auth/login", authLimiter);

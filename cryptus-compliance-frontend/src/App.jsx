@@ -13,8 +13,11 @@ import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import FeaturesPage from "./pages/Features";
 import FrameworksPage from "./pages/Frameworks";
+import FrameworkCard from "./pages/FrameworkCard";
 import PricingPage from "./pages/Pricing";
 import ResourcesPage from "./pages/Resources";
+import FrameworkControlsPage from "./pages/FrameworkControllers/FrameworkControlsPage";
+import FrameworkControlDetail from "./pages/FrameworkControllers/FrameworkControlDetail";
 
 // ── App Pages ────────────────────────────────────────────────────────
 import Dashboard from "./pages/Dashboard";
@@ -65,6 +68,9 @@ function AppRoutes() {
           <Route path="/register" element={<Register />} />
           <Route path="/features" element={<FeaturesPage />} />
           <Route path="/frameworks" element={<FrameworksPage />} />
+          <Route path="/framework-card/:slug" element={<FrameworkCard />} />
+          <Route path="/framework-card-controller/:slug" element={<FrameworkControlsPage />} />
+          <Route path="/framework-card-controller/:slug/:controlId" element={<FrameworkControlDetail />} />
           <Route path="/pricing" element={<PricingPage />} />
           <Route path="/resources" element={<ResourcesPage />} />
 

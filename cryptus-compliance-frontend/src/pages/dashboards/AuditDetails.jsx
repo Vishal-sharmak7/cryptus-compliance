@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "../../context/AuthContext";
 import { auditService } from "../../services/audit.service";
 import { FileText, Building, ShieldCheck, CheckCircle, XCircle, ArrowLeft } from "lucide-react";
 import toast from "react-hot-toast";
@@ -9,6 +10,7 @@ export default function AuditDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { user } = useAuth();
 
   const { data: auditResp, isLoading } = useQuery({
     queryKey: ["audit", id],
@@ -24,7 +26,7 @@ export default function AuditDetails() {
     onError: (err) => toast.error(err.response?.data?.message || "Failed to update audit")
   });
 
-  const audit = auditResp?.audit || auditResp || {};
+  const audit = auditResp?.data || auditResp?.audit || auditResp || {};
 
   if (isLoading) return <div className="p-8 text-center text-slate-500">Loading audit details...</div>;
   if (!audit.id) return <div className="p-8 text-center text-slate-500">Audit not found.</div>;
@@ -90,25 +92,27 @@ export default function AuditDetails() {
             </div>
           </div>
 
-          <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-6">
-            <h2 className="text-lg font-bold text-slate-800 mb-4">Actions</h2>
-            <div className="space-y-3">
-              <button 
-                onClick={() => handleStatusChange("IN_PROGRESS")}
-                disabled={audit.status === "IN_PROGRESS" || updateMutation.isPending}
-                className="w-full py-2.5 px-4 bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                Mark In Progress
-              </button>
-              <button 
-                onClick={() => handleStatusChange("COMPLETED")}
-                disabled={audit.status === "COMPLETED" || updateMutation.isPending}
-                className="w-full py-2.5 px-4 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-medium rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                <CheckCircle size={18} /> Complete Audit
-              </button>
+          {user?.role !== "CLIENT" && (
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden p-6">
+              <h2 className="text-lg font-bold text-slate-800 mb-4">Actions</h2>
+              <div className="space-y-3">
+                <button 
+                  onClick={() => handleStatusChange("IN_PROGRESS")}
+                  disabled={audit.status === "IN_PROGRESS" || updateMutation.isPending}
+                  className="w-full py-2.5 px-4 bg-blue-50 text-blue-700 hover:bg-blue-100 font-medium rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  Mark In Progress
+                </button>
+                <button 
+                  onClick={() => handleStatusChange("COMPLETED")}
+                  disabled={audit.status === "COMPLETED" || updateMutation.isPending}
+                  className="w-full py-2.5 px-4 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 font-medium rounded-xl transition flex items-center justify-center gap-2 disabled:opacity-50"
+                >
+                  <CheckCircle size={18} /> Complete Audit
+                </button>
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
     </div>

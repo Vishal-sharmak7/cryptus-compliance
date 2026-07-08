@@ -1,10 +1,12 @@
 import { CalendarDays, Clock, User, ShieldCheck } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 import { auditService } from "../../services/audit.service";
 import { useAuth } from "../../context/AuthContext";
 
 export default function UpcomingAudits() {
   const { user } = useAuth();
+  const navigate = useNavigate();
   
   const { data: auditsResp, isLoading } = useQuery({
     queryKey: ["audits", "upcoming", user?.company_id],
@@ -36,7 +38,11 @@ export default function UpcomingAudits() {
       ) : (
         <div className="space-y-3 max-h-[300px] overflow-y-auto pr-2">
           {audits.map((a) => (
-            <div key={a.id} className="flex flex-col gap-2 p-3 border border-slate-100 rounded-xl hover:bg-slate-50 transition">
+            <div 
+              key={a.id} 
+              onClick={() => navigate(`/app/audits/${a.id}`)}
+              className="flex flex-col gap-2 p-3 border border-slate-100 rounded-xl hover:bg-indigo-50/30 transition cursor-pointer"
+            >
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   <span className="w-8 h-8 rounded-lg bg-indigo-50 flex items-center justify-center">

@@ -8,13 +8,20 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 
-const EMPTY_FORM = { title: "", description: "" };
+const EMPTY_FORM = { title: "", description: "", category: "" };
 
 const STATUS_STYLE = {
   PASSED:   "bg-emerald-100 text-emerald-800",
   FAILED:   "bg-red-100 text-red-800",
   REVIEWED: "bg-blue-100 text-blue-800",
   default:  "bg-amber-100 text-amber-800",
+};
+
+const CATEGORY_COLORS = {
+  Organizational: "bg-blue-50 text-blue-700 border-blue-200",
+  People: "bg-purple-50 text-purple-700 border-purple-200",
+  Physical: "bg-amber-50 text-amber-700 border-amber-200",
+  Technological: "bg-indigo-50 text-indigo-700 border-indigo-200",
 };
 
 export default function ControlsManagement() {
@@ -125,6 +132,7 @@ export default function ControlsManagement() {
     setFormData({
       title: ctrl.title || ctrl.control_title || "",
       description: ctrl.description || "",
+      category: ctrl.category || "",
     });
     setIsModalOpen(true);
   };
@@ -252,9 +260,16 @@ export default function ControlsManagement() {
                           <Shield size={18} />
                         </div>
                         <div className="min-w-0">
-                          <p className="font-semibold text-slate-900">
-                            {ctrl.title || ctrl.control_title}
-                          </p>
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <span className="font-semibold text-slate-900">
+                              {ctrl.title || ctrl.control_title}
+                            </span>
+                            {ctrl.category && (
+                              <span className={`inline-flex items-center px-2 py-0.5 rounded-md text-[10px] font-semibold border ${CATEGORY_COLORS[ctrl.category] || 'bg-slate-50 text-slate-600 border-slate-200'}`}>
+                                {ctrl.category}
+                              </span>
+                            )}
+                          </div>
                           <p className="text-xs text-slate-400 mt-0.5 leading-relaxed line-clamp-2 max-w-lg">
                             {ctrl.description || "—"}
                           </p>
@@ -352,6 +367,23 @@ export default function ControlsManagement() {
                   className="w-full px-3 py-2 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition text-sm"
                   placeholder="e.g., Access Control Management"
                 />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-slate-700 mb-1">
+                  Category (Optional)
+                </label>
+                <select
+                  value={formData.category}
+                  onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                  className="w-full px-3 py-2 border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition text-sm text-slate-800"
+                >
+                  <option value="">Select Category (Optional)</option>
+                  <option value="Organizational">Organizational</option>
+                  <option value="People">People</option>
+                  <option value="Physical">Physical</option>
+                  <option value="Technological">Technological</option>
+                </select>
               </div>
 
               <div>

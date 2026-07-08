@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { FaArrowRight, FaCheckCircle } from "react-icons/fa";
 
 // ── Framework data ────────────────────────────────────────────────────
@@ -15,6 +15,7 @@ import logo8 from "../assets/logos/8.png";
 const frameworks = [
   {
     name: "ISO 27001",
+    slug: "iso-27001",
     logo: logo1,
     category: "Information Security",
     controls: "114",
@@ -26,6 +27,7 @@ const frameworks = [
   },
   {
     name: "SOC 2",
+    slug: "soc-2",
     logo: logo2,
     category: "Trust & Security",
     controls: "64",
@@ -37,6 +39,7 @@ const frameworks = [
   },
   {
     name: "GDPR",
+    slug: "gdpr",
     logo: logo3,
     category: "Data Privacy",
     controls: "99",
@@ -48,6 +51,7 @@ const frameworks = [
   },
   {
     name: "PCI-DSS",
+    slug: "pci-dss",
     logo: logo4,
     category: "Payment Security",
     controls: "300+",
@@ -59,6 +63,7 @@ const frameworks = [
   },
   {
     name: "HIPAA",
+    slug: "hipaa",
     logo: logo5,
     category: "Healthcare",
     controls: "180+",
@@ -70,6 +75,7 @@ const frameworks = [
   },
   {
     name: "DPDPA",
+    slug: "dpdpa",
     logo: logo6,
     category: "Indian Data Privacy",
     controls: "40+",
@@ -81,6 +87,7 @@ const frameworks = [
   },
   {
     name: "CMMC",
+    slug: "cmmc",
     logo: logo7,
     category: "Defense",
     controls: "110",
@@ -92,6 +99,7 @@ const frameworks = [
   },
   {
     name: "NIST CSF",
+    slug: "nist-csf",
     logo: logo8,
     category: "Cybersecurity",
     controls: "108",
@@ -106,17 +114,13 @@ const frameworks = [
 const categories = ["All", ...new Set(frameworks.map((f) => f.category))];
 
 export default function FrameworksPage() {
+  const navigate = useNavigate();
   const [activeCategory, setActiveCategory] = useState("All");
-  const [activeFramework, setActiveFramework] = useState(null);
 
   const filtered =
     activeCategory === "All"
       ? frameworks
       : frameworks.filter((f) => f.category === activeCategory);
-
-  const detail = activeFramework
-    ? frameworks.find((f) => f.name === activeFramework)
-    : null;
 
   return (
     <div className="min-h-screen">
@@ -172,14 +176,8 @@ export default function FrameworksPage() {
           {filtered.map((fw) => (
             <button
               key={fw.name}
-              onClick={() =>
-                setActiveFramework(activeFramework === fw.name ? null : fw.name)
-              }
-              className={`text-left bg-white/70 border rounded-3xl p-6 card-hover transition-all duration-200 ${
-                activeFramework === fw.name
-                  ? "border-indigo-300 shadow-lg shadow-indigo-100/50"
-                  : "border-white/80"
-              }`}
+              onClick={() => navigate(`/framework-card/${fw.slug}`)}
+              className="text-left bg-white/70 border rounded-3xl p-6 card-hover transition-all duration-200 border-white/80"
             >
               {/* Logo */}
               <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${fw.color} flex items-center justify-center mb-5`}>
@@ -203,46 +201,6 @@ export default function FrameworksPage() {
             </button>
           ))}
         </div>
-
-        {/* ── Detail Panel ─────────────────────────────────── */}
-        {detail && (
-          <div className="mt-8 bg-white/80 border border-indigo-200/60 rounded-3xl p-8 md:p-10 shadow-xl shadow-indigo-100/30 animate-fade-up">
-            <div className="flex flex-col md:flex-row gap-8">
-              <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${detail.color} flex items-center justify-center shrink-0`}>
-                <img src={detail.logo} alt={detail.name} className="w-12 h-12 object-contain" />
-              </div>
-
-              <div className="flex-1">
-                <div className="flex flex-wrap items-center gap-3 mb-3">
-                  <h2 className="text-2xl font-bold text-slate-900">{detail.name}</h2>
-                  <span className="text-xs font-semibold px-3 py-1 rounded-full bg-indigo-50 text-indigo-600 border border-indigo-200">
-                    {detail.category}
-                  </span>
-                  <span className="text-xs font-medium text-slate-400">{detail.controls} controls</span>
-                </div>
-
-                <p className="text-slate-600 leading-relaxed mb-6">{detail.description}</p>
-
-                <div className="grid sm:grid-cols-2 gap-3">
-                  {detail.features.map((f) => (
-                    <div key={f} className="flex items-center gap-2.5">
-                      <FaCheckCircle className="text-indigo-500 shrink-0" />
-                      <span className="text-sm text-slate-700">{f}</span>
-                    </div>
-                  ))}
-                </div>
-
-                <Link
-                  to="/register"
-                  className="mt-8 inline-flex items-center gap-2 text-sm font-semibold text-white px-6 py-3 rounded-full transition hover:opacity-90"
-                  style={{ background: "#155DFC" }}
-                >
-                  Start with {detail.name} <FaArrowRight className="text-xs" />
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
       </section>
 
       {/* ── CTA ────────────────────────────────────────────── */}

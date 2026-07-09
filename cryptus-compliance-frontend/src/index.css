@@ -117,3 +117,12 @@ body {
 .animate-fadeInDown {
   animation: fadeInDown 0.2s ease forwards;
 }
+
+/* ─── Profile Panel Slide-in ────────────────────────────── */
+@keyframes slideFromRight {
+  from { transform: translateX(100%); opacity: 0; }
+  to   { transform: translateX(0);    opacity: 1; }
+}
+.animate-slide-from-right {
+  animation: slideFromRight 0.45s cubic-bezier(0.32, 0.72, 0, 1) forwards;
+}

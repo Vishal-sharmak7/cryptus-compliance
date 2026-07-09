@@ -2,6 +2,7 @@ import api from "./api";
 
 export const authService = {
   getProfile: () => api.get("/auth/profile"),
+  updateProfile: (data) => api.put("/auth/profile", data),
   login: (data) => api.post("/auth/login", data),
   register: (data) => api.post("/auth/register", data),
 };

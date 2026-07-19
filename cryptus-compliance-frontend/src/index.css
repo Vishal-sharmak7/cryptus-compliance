@@ -2,14 +2,7 @@
 
 @import "tailwindcss";
 
-/* ─── Universal Background Gradient ──────────────────────────────── */
-:root {
-  --bg-gradient: radial-gradient(ellipse 80% 60% at 10% -10%, rgba(99,102,241,0.12) 0%, transparent 60%),
-                 radial-gradient(ellipse 60% 50% at 90% 110%, rgba(59,130,246,0.10) 0%, transparent 60%),
-                 radial-gradient(ellipse 50% 40% at 50% 50%, rgba(139,92,246,0.05) 0%, transparent 70%),
-                 #f8fafc;
-}
-
+/* ─── Global Styles ───────────────────────────────────────────── */
 *, *::before, *::after {
   box-sizing: border-box;
 }
@@ -19,12 +12,13 @@ html {
 }
 
 body {
-  font-family: "Inter", "Roboto Condensed", sans-serif;
-  background: var(--bg-gradient);
-  background-attachment: fixed;
-  min-height: 100vh;
-  color: #0f172a;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  color: #111827;
+  background-color: #F5F5F7; /* Clean Apple-like off-white */
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  overflow-x: hidden;
 }
 
 #root {
@@ -33,96 +27,73 @@ body {
   flex-direction: column;
 }
 
-/* ─── Animations ─────────────────────────────────────────────────── */
+/* ─── UI Utilities ───────────────────────────────────────────────── */
+.glass {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02), 0 2px 4px -1px rgba(0, 0, 0, 0.02);
+}
+
+.glass-dark {
+  background: rgba(17, 24, 39, 0.8);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #f9fafb;
+}
+
+/* ─── Micro-Animations ───────────────────────────────────────────── */
+.card-hover {
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.025);
+}
+
 @keyframes slideInRight {
-  from { transform: translateX(100%); opacity: 0; }
+  from { transform: translateX(20px); opacity: 0; }
   to   { transform: translateX(0);    opacity: 1; }
 }
 
 @keyframes slideInDown {
-  from { transform: translateY(-20px); opacity: 0; }
+  from { transform: translateY(-10px); opacity: 0; }
   to   { transform: translateY(0);     opacity: 1; }
 }
 
 @keyframes fadeInUp {
-  from { transform: translateY(30px); opacity: 0; }
+  from { transform: translateY(15px); opacity: 0; }
   to   { transform: translateY(0);    opacity: 1; }
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-8px); }
+.animate-slide-in     { animation: slideInRight 0.4s ease-out forwards; }
+.animate-slide-down   { animation: slideInDown  0.3s ease-out forwards; }
+.animate-fade-up      { animation: fadeInUp     0.4s ease-out forwards; }
+
+/* ─── Clay / Neumorphic Cards ─────────────────────────────────── */
+.clay-card {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow:
+    0 2px 8px rgba(0, 0, 0, 0.04),
+    0 1px 3px rgba(0, 0, 0, 0.03),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
 }
 
-@keyframes shimmer {
-  0%   { background-position: -200% 0; }
-  100% { background-position:  200% 0; }
+.clay-inset {
+  background: rgba(241, 245, 249, 0.7);
+  border: 1px solid rgba(226, 232, 240, 0.8);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
-@keyframes pulse-glow {
-  0%, 100% { box-shadow: 0 0 0 0 rgba(99,102,241,0.4); }
-  50%       { box-shadow: 0 0 0 12px rgba(99,102,241,0); }
-}
-
-.animate-slide-in     { animation: slideInRight 0.6s ease forwards; }
-.animate-slide-down   { animation: slideInDown  0.4s ease forwards; }
-.animate-fade-up      { animation: fadeInUp     0.6s ease forwards; }
-.animate-float        { animation: float        3s ease-in-out infinite; }
-.animate-pulse-glow   { animation: pulse-glow   2s ease-in-out infinite; }
-
-/* ─── Glassmorphism Utility ──────────────────────────────────────── */
-.glass {
-  background: rgba(255,255,255,0.70);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.50);
-}
-
-.glass-dark {
-  background: rgba(15,23,42,0.85);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.08);
-}
-
-/* ─── Gradient Text ──────────────────────────────────────────────── */
+/* ─── Gradient Text ────────────────────────────────────────────── */
 .gradient-text {
-  background: #155DFC;
+  background: linear-gradient(135deg, #155DFC 0%, #7C3AED 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-}
-
-/* ─── Card Hover ─────────────────────────────────────────────────── */
-.card-hover {
-  transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
-}
-.card-hover:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 24px 48px -12px rgba(99,102,241,0.18);
-  border-color: rgba(99,102,241,0.25);
-}
-
-/* ─── Profile Dropdown Animation ─────────────────────────────── */
-@keyframes fadeInDown {
-  from {
-    opacity: 0;
-    transform: translateY(-8px) scale(0.97);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-.animate-fadeInDown {
-  animation: fadeInDown 0.2s ease forwards;
-}
-
-/* ─── Profile Panel Slide-in ────────────────────────────── */
-@keyframes slideFromRight {
-  from { transform: translateX(100%); opacity: 0; }
-  to   { transform: translateX(0);    opacity: 1; }
-}
-.animate-slide-from-right {
-  animation: slideFromRight 0.45s cubic-bezier(0.32, 0.72, 0, 1) forwards;
 }

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import logo1 from "../assets/logos/1.png";
 import logo2 from "../assets/logos/2.png";
 import logo3 from "../assets/logos/3.png";
@@ -40,16 +41,13 @@ export default function Hero() {
 
         {/* CTA */}
         <div className="mt-12 flex ">
-          <div className="flex items-center bg-white border border-blue-200 rounded-full p-2 shadow-lg">
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-full font-medium transition cursor-pointer">
-              Start Free Trial
-            </button>
-
-            <button className="px-4 py-2 text-gray-700 font-medium flex items-center gap-3 cursor-pointer">
-              Book Demo
-              <span className="text-xl">→</span>
-            </button>
-          </div>
+          <Link
+            to="/book-demo"
+            className="inline-flex items-center gap-3 bg-blue-600 hover:bg-blue-700 text-white px-6 py-3.5 rounded-full font-medium shadow-lg shadow-blue-200/60 transition cursor-pointer"
+          >
+            Book Demo
+            <span className="text-xl">→</span>
+          </Link>
         </div>
 
         {/* Stats */}

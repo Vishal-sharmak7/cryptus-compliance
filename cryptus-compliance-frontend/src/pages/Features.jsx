@@ -112,17 +112,11 @@ export default function FeaturesPage() {
 
           <div className="mt-10 flex flex-wrap justify-center gap-4">
             <Link
-              to="/register"
+              to="/book-demo"
               className="flex items-center gap-2 text-sm font-semibold text-white px-6 py-3 rounded-full transition-all hover:opacity-90 hover:shadow-lg hover:shadow-indigo-300/40"
               style={{ background: "#155DFC" }}
             >
-              Start Free Trial <FaArrowRight className="text-xs" />
-            </Link>
-            <Link
-              to="/pricing"
-              className="flex items-center gap-2 text-sm font-semibold text-slate-700 px-6 py-3 rounded-full border border-slate-200 hover:border-indigo-300 hover:text-indigo-600 transition-all bg-white/60"
-            >
-              View Pricing
+              Book Demo <FaArrowRight className="text-xs" />
             </Link>
           </div>
         </div>
@@ -165,10 +159,10 @@ export default function FeaturesPage() {
               Join compliance teams that trust Cryptus to automate their programmes end to end.
             </p>
             <Link
-              to="/register"
+              to="/book-demo"
               className="mt-8 inline-flex items-center gap-2 bg-white text-indigo-600 font-semibold px-4 py-2 rounded-full hover:bg-indigo-50 transition"
             >
-              Start Free Trial <FaArrowRight />
+              Book Demo <FaArrowRight />
             </Link>
           </div>
         </div>

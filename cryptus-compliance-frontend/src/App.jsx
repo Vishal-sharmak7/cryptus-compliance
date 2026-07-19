@@ -14,8 +14,9 @@ import Register from "./pages/auth/Register";
 import FeaturesPage from "./pages/Features";
 import FrameworksPage from "./pages/Frameworks";
 import FrameworkCard from "./pages/FrameworkCard";
-import PricingPage from "./pages/Pricing";
 import ResourcesPage from "./pages/Resources";
+import ResourceDetail from "./pages/ResourceDetail";
+import BookDemo from "./pages/BookDemo";
 import FrameworkControlsPage from "./pages/FrameworkControllers/FrameworkControlsPage";
 import FrameworkControlDetail from "./pages/FrameworkControllers/FrameworkControlDetail";
 
@@ -71,8 +72,9 @@ function AppRoutes() {
           <Route path="/framework-card/:slug" element={<FrameworkCard />} />
           <Route path="/framework-card-controller/:slug" element={<FrameworkControlsPage />} />
           <Route path="/framework-card-controller/:slug/:controlId" element={<FrameworkControlDetail />} />
-          <Route path="/pricing" element={<PricingPage />} />
           <Route path="/resources" element={<ResourcesPage />} />
+          <Route path="/resources/:slug" element={<ResourceDetail />} />
+          <Route path="/book-demo" element={<BookDemo />} />
 
           {/* Protected App Routes */}
           <Route
@@ -218,11 +220,7 @@ function AppRoutes() {
 
 function App() {
   return (
-    <div className="min-h-screen w-full relative">
-      {/* Dashed Grid for public pages only */}
-      <div
-        className="absolute inset-0 z-0 pointer-events-none hidden" // Hiding the grid globally if needed, or adjust z-index. The public pages have their own background handling now.
-      />
+    <div className="min-h-screen w-full bg-[#F5F5F7]">
       <div className="relative z-10 flex flex-col min-h-screen">
         <BrowserRouter>
           <AppRoutes />

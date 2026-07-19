@@ -1,25 +1,21 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, NavLink, useNavigate } from "react-router-dom";
 import logo from "../assets/logo.png";
 import { FaBars, FaTimes } from "react-icons/fa";
 import {
   FiUser, FiLogOut, FiGrid, FiChevronDown,
-  FiDollarSign, FiBookOpen, FiShield,
+  FiBookOpen, FiShield,
 } from "react-icons/fi";
-import ProfilePanel from "./ProfilePanel";
-import { authService } from "../services/auth.service";
 
 const navLinks = [
   { label: "Features",   to: "/features"   },
   { label: "Frameworks", to: "/frameworks" },
-  { label: "Pricing",    to: "/pricing"    },
   { label: "Resources",  to: "/resources"  },
 ];
 
 const profileMenuItems = [
   { label: "Dashboard",  to: "/app/dashboard",  icon: FiGrid,       newTab: true },
   { label: "Profile",    to: "/profile",    icon: FiUser                    },
-  { label: "Pricing",    to: "/pricing",    icon: FiDollarSign               },
   { label: "Resources",  to: "/resources",  icon: FiBookOpen                 },
   { label: "Frameworks", to: "/frameworks", icon: FiShield                   },
 ];
@@ -37,12 +33,10 @@ function getUserFromToken() {
 }
 
 export default function Header() {
-  const [scrolled,        setScrolled]        = useState(false);
-  const [menuOpen,        setMenuOpen]        = useState(false);
-  const [dropdownOpen,    setDropdownOpen]    = useState(false);
-  const [user,            setUser]            = useState(() => getUserFromToken());
-  const [profileOpen,     setProfileOpen]     = useState(false);
-  const [fullUser,        setFullUser]        = useState(null);
+  const [scrolled,     setScrolled]     = useState(false);
+  const [menuOpen,     setMenuOpen]     = useState(false);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [user,         setUser]         = useState(() => getUserFromToken());
 
   const dropdownRef = useRef(null);
   const navigate    = useNavigate();
@@ -80,38 +74,12 @@ export default function Header() {
     navigate("/");
   };
 
-  const openProfile = useCallback(async () => {
-    setDropdownOpen(false);
-    setMenuOpen(false);
-    try {
-      const res = await authService.getProfile();
-      setFullUser(res.data.user);
-    } catch {
-      // Fallback: build a minimal user object from the JWT
-      try {
-        const token = localStorage.getItem("token");
-        const payload = JSON.parse(atob(token.split(".")[1]));
-        setFullUser(payload);
-      } catch {
-        setFullUser(null);
-      }
-    }
-    setProfileOpen(true);
-  }, []);
-
-  const handleProfileSave = useCallback((updatedUser) => {
-    setFullUser(updatedUser);
-    // Refresh the display name from the new token
-    setUser(updatedUser.name || updatedUser.email || "User");
-  }, []);
-
   /* avatar initials */
   const initials = user
     ? user.split(" ").map((w) => w[0]).slice(0, 2).join("").toUpperCase()
     : "?";
 
   return (
-    <>
     <header
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         scrolled
@@ -177,21 +145,8 @@ export default function Header() {
                   </div>
 
                   <div className="py-2">
-                    {profileMenuItems.map(({ label, to, icon: Icon, newTab }) => {
-                      // Profile button opens the slide-in panel
-                      if (label === "Profile") {
-                        return (
-                          <button
-                            key={to}
-                            onClick={openProfile}
-                            className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-slate-600 hover:text-indigo-600 hover:bg-indigo-50/80 transition-all duration-150 group text-left"
-                          >
-                            <Icon className="w-4 h-4 text-slate-400 group-hover:text-indigo-500 transition-colors" />
-                            {label}
-                          </button>
-                        );
-                      }
-                      return newTab ? (
+                    {profileMenuItems.map(({ label, to, icon: Icon, newTab }) =>
+                      newTab ? (
                         <a
                           key={to}
                           href={to}
@@ -213,8 +168,8 @@ export default function Header() {
                           <Icon className="w-4 h-4 text-slate-400 group-hover:text-indigo-500 transition-colors" />
                           {label}
                         </Link>
-                      );
-                    })}
+                      )
+                    )}
                   </div>
 
                   {/* Logout */}
@@ -240,7 +195,7 @@ export default function Header() {
                 Login
               </Link>
               <Link
-                to="/register"
+                to="/book-demo"
                 className="text-sm font-semibold text-white px-5 py-2.5 rounded-full transition-all duration-200 hover:opacity-90 hover:shadow-lg hover:shadow-indigo-300/40"
                 style={{ background: "#155DFC" }}
               >
@@ -287,31 +242,17 @@ export default function Header() {
           <div className="mt-4 flex flex-col gap-2 border-t border-white/50 pt-4">
             {user ? (
               <>
-                {profileMenuItems.map(({ label, to, icon: Icon }) => {
-                  if (label === "Profile") {
-                    return (
-                      <button
-                        key={to}
-                        onClick={openProfile}
-                        className="w-full flex items-center gap-3 px-4 py-3 text-sm text-slate-700 rounded-xl hover:bg-indigo-50/70 hover:text-indigo-600 transition text-left"
-                      >
-                        <Icon className="w-4 h-4" />
-                        {label}
-                      </button>
-                    );
-                  }
-                  return (
-                    <Link
-                      key={to}
-                      to={to}
-                      onClick={() => setMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 rounded-xl hover:bg-indigo-50/70 hover:text-indigo-600 transition"
-                    >
-                      <Icon className="w-4 h-4" />
-                      {label}
-                    </Link>
-                  );
-                })}
+                {profileMenuItems.map(({ label, to, icon: Icon }) => (
+                  <Link
+                    key={to}
+                    to={to}
+                    onClick={() => setMenuOpen(false)}
+                    className="flex items-center gap-3 px-4 py-3 text-sm text-slate-700 rounded-xl hover:bg-indigo-50/70 hover:text-indigo-600 transition"
+                  >
+                    <Icon className="w-4 h-4" />
+                    {label}
+                  </Link>
+                ))}
                 <button
                   onClick={() => { handleLogout(); setMenuOpen(false); }}
                   className="flex items-center gap-3 px-4 py-3 text-sm text-red-500 rounded-xl hover:bg-red-50 transition text-left"
@@ -330,7 +271,7 @@ export default function Header() {
                   Login
                 </Link>
                 <Link
-                  to="/register"
+                  to="/book-demo"
                   onClick={() => setMenuOpen(false)}
                   className="text-sm font-semibold text-white text-center px-4 py-3 rounded-xl transition"
                   style={{ background: "#155DFC" }}
@@ -343,14 +284,5 @@ export default function Header() {
         </nav>
       </div>
     </header>
-
-    {/* ── Profile Slide-in Panel ── */}
-    <ProfilePanel
-      open={profileOpen}
-      onClose={() => setProfileOpen(false)}
-      user={fullUser}
-      onSave={handleProfileSave}
-    />
-    </>
   );
 }

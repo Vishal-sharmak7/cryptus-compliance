@@ -52,8 +52,8 @@ function Sidebar({ open, onClose, user, logout }) {
   return (
     <>
       {open && <div className="fixed inset-0 z-30 bg-slate-900/30 backdrop-blur-sm lg:hidden" onClick={onClose} />}
-      <aside className={`fixed top-0 left-0 h-full w-64 bg-white border-r border-slate-200 z-40 flex flex-col shadow-xl transition-transform duration-300 ${open ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 lg:static lg:shadow-none lg:z-auto`}>
-        <div className="h-16 flex items-center justify-between px-5 border-b border-slate-100">
+      <aside className={`fixed top-0 left-0 h-full w-64 glass border-r border-white/30 z-40 flex flex-col shadow-xl transition-transform duration-300 ${open ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0 lg:static lg:shadow-none lg:z-auto`}>
+        <div className="h-16 flex items-center justify-between px-5 border-b border-white/30">
           <Link to="/" className="flex items-center gap-2">
             <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center">
               <ShieldCheck size={16} className="text-white" />
@@ -73,7 +73,7 @@ function Sidebar({ open, onClose, user, logout }) {
               to={to}
               onClick={onClose}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive ? "bg-indigo-50 text-indigo-600" : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"}`
+                `flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all ${isActive ? "bg-white/60 text-indigo-700 shadow-sm border border-white/50" : "text-slate-600 hover:bg-white/40 hover:text-slate-900 border border-transparent"}`
               }
             >
               {({ isActive }) => (
@@ -86,7 +86,7 @@ function Sidebar({ open, onClose, user, logout }) {
             </NavLink>
           ))}
         </nav>
-        <div className="border-t border-slate-100 p-4 space-y-2">
+        <div className="border-t border-white/30 p-4 space-y-2">
           <div className="flex items-center gap-3 px-2 py-2">
             <span className="w-8 h-8 rounded-full bg-gradient-to-br from-indigo-500 to-blue-600 flex items-center justify-center text-white text-xs font-bold shrink-0">{initials}</span>
             <div className="min-w-0">
@@ -94,7 +94,7 @@ function Sidebar({ open, onClose, user, logout }) {
               <p className="text-xs text-slate-400 truncate">{user?.companyId ? "Client" : user?.role}</p>
             </div>
           </div>
-          <button onClick={logout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-all">
+          <button onClick={logout} className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium text-red-500 hover:bg-white/50 border border-transparent hover:border-white/30 transition-all">
             <LogOut size={15} /> Logout
           </button>
         </div>
@@ -106,7 +106,7 @@ function Sidebar({ open, onClose, user, logout }) {
 function TopBar({ onMenuClick, user }) {
   const initials = user?.name ? user.name.charAt(0).toUpperCase() : "U";
   return (
-    <header className="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 shrink-0">
+    <header className="h-16 glass border-b border-white/30 flex items-center justify-between px-6 shrink-0 z-10">
       <div className="flex items-center gap-3">
         <button onClick={onMenuClick} className="lg:hidden w-9 h-9 flex items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 transition">
           <Menu size={18} />
@@ -142,7 +142,7 @@ export default function AppLayout() {
   };
 
   return (
-    <div className="flex h-screen overflow-hidden bg-slate-50 font-sans">
+    <div className="flex h-screen overflow-hidden bg-transparent font-sans">
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} user={user} logout={handleLogout} />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <TopBar onMenuClick={() => setSidebarOpen(true)} user={user} />

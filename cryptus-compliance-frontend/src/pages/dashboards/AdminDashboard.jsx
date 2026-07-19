@@ -35,8 +35,8 @@ export default function AdminDashboard() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {stats.map((stat, i) => (
-          <div key={i} className="bg-white rounded-2xl p-5 border border-slate-200 shadow-sm flex items-center gap-4">
-            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${stat.bg}`}>
+          <div key={i} className="glass p-5 rounded-2xl flex items-center gap-4 card-hover animate-fade-up" style={{ animationDelay: `${i * 0.05}s` }}>
+            <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${stat.bg} shadow-sm border border-white/50`}>
               <stat.icon size={24} className={stat.color} />
             </div>
             <div>
@@ -47,20 +47,20 @@ export default function AdminDashboard() {
         ))}
       </div>
 
-      <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
-        <div className="px-6 py-5 border-b border-slate-100">
+      <div className="glass rounded-2xl overflow-hidden animate-fade-up" style={{ animationDelay: '0.4s' }}>
+        <div className="px-6 py-5 border-b border-white/30 bg-white/20">
           <h2 className="text-lg font-bold text-slate-800">Company Progress</h2>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm whitespace-nowrap">
-            <thead className="bg-slate-50 text-slate-500">
+            <thead className="bg-white/40 text-slate-700 backdrop-blur-md">
               <tr>
                 <th className="px-6 py-4 font-medium">Company Name</th>
                 <th className="px-6 py-4 font-medium">Controls Implemented</th>
                 <th className="px-6 py-4 font-medium">Completion %</th>
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-100">
+            <tbody className="divide-y divide-white/20">
               {byCompany.length === 0 && (
                 <tr>
                   <td colSpan="3" className="px-6 py-8 text-center text-slate-500">No company data available.</td>
@@ -72,7 +72,7 @@ export default function AdminDashboard() {
                 const percent = total > 0 ? Math.round((completed / total) * 100) : 0;
                 
                 return (
-                  <tr key={i} className="hover:bg-slate-50/50 transition">
+                  <tr key={i} className="hover:bg-white/40 transition duration-300">
                     <td className="px-6 py-4 font-medium text-slate-900">{comp.name}</td>
                     <td className="px-6 py-4 text-slate-600">{completed} / {total}</td>
                     <td className="px-6 py-4">

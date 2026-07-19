@@ -1,4 +1,5 @@
 import React from "react";
+import { Link } from "react-router-dom";
 import { FaArrowRight } from "react-icons/fa";
 
 const CTA = () => {
@@ -25,14 +26,13 @@ const CTA = () => {
           </p>
 
           <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-            <button className="bg-white text-blue-600 px-4 py-2 rounded-full font-semibold hover:bg-gray-100 transition">
-              Start Free Trial
-            </button>
-
-            <button className="flex items-center justify-center gap-3 px-4 py-2 rounded-full border border-white/30 text-white font-semibold hover:bg-white/10 transition">
+            <Link
+              to="/book-demo"
+              className="flex items-center justify-center gap-3 bg-white text-blue-600 px-6 py-3 rounded-full font-semibold hover:bg-gray-100 transition"
+            >
               Book Demo
               <FaArrowRight />
-            </button>
+            </Link>
           </div>
 
           <div className="mt-5 flex flex-wrap justify-center gap-8 text-blue-100 text-[10px]">

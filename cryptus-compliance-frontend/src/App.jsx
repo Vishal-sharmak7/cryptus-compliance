@@ -33,6 +33,8 @@ import TaskManagement from "./pages/dashboards/TaskManagement";
 import FindingManagement from "./pages/dashboards/FindingManagement";
 import CompanyDetail from "./pages/dashboards/CompanyDetail";
 import RiskManagement from "./pages/dashboards/RiskManagement";
+import ReportsPage from "./pages/dashboards/ReportsPage";
+import SettingsPage from "./pages/dashboards/SettingsPage";
 
 // ── Layouts & Guards ─────────────────────────────────────────────────
 import Header from "./components/Header";
@@ -199,13 +201,13 @@ function AppRoutes() {
               path="reports"
               element={
                 <RoleRoute roles={["SUPER_ADMIN", "AUDITOR", "CLIENT"]}>
-                  <Placeholder title="Reports" />
+                  <ReportsPage />
                 </RoleRoute>
               }
             />
 
             {/* ALL Roles */}
-            <Route path="settings" element={<Placeholder title="Settings" />} />
+            <Route path="settings" element={<SettingsPage />} />
           </Route>
 
           {/* Catch all */}

@@ -2,7 +2,7 @@ import api from "./api";
 
 export const taskService = {
   // Get all tasks for a company or user
-  getAll: (companyId) => api.get(`/tasks/company/${companyId}`),
+  getAll: (params) => api.get("/tasks", { params }),
   // Create a new task
   create: (data) => api.post("/tasks", data),
   // Update an existing task

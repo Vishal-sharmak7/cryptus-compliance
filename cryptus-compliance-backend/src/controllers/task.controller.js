@@ -23,7 +23,7 @@ export const createTask = async (req, res) => {
 
 // ── GET /api/tasks ────────────────────────────────────────────────
 export const getTasks = async (req, res) => {
-  const { status, priority, page = 1, limit = 20, search = "" } = req.query;
+  const { status, priority, page = 1, limit = 20, search = "", company_id } = req.query;
   const offset = (Number(page) - 1) * Number(limit);
   let sql = `SELECT t.*, u.name as assigned_to_name, c.name as control_name
              FROM tasks t
@@ -31,7 +31,13 @@ export const getTasks = async (req, res) => {
              LEFT JOIN controls c ON c.id = t.control_id
              WHERE 1=1`;
   const params = [];
-  if (req.user.role === "CLIENT") { sql += " AND t.company_id = ?"; params.push(req.user.company_id); }
+  if (req.user.role === "CLIENT") {
+    sql += " AND t.company_id = ?";
+    params.push(req.user.company_id);
+  } else if (company_id) {
+    sql += " AND t.company_id = ?";
+    params.push(Number(company_id));
+  }
   if (status)   { sql += " AND t.status = ?";   params.push(status);   }
   if (priority) { sql += " AND t.priority = ?"; params.push(priority); }
   if (search)   { sql += " AND t.title LIKE ?"; params.push(`%${search}%`); }
